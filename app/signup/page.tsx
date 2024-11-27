@@ -43,7 +43,6 @@ export default function() {
                         name: name
                     });
                     
-                    localStorage.setItem("token", res.data.token);
 
                     router.push("/login");
 
