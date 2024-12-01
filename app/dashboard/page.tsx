@@ -4,7 +4,7 @@ import Appbar from "@/components/Appbar";
 import HardButton from "@/components/button/HardButton";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { BACKEND_URL } from "../config";
+import { BACKEND_URL, HOOKS_URL } from "../config";
 import Button from "@/components/button/Button";
 import { useRouter } from "next/navigation";
 
@@ -19,7 +19,8 @@ interface Task {
                 "sortingOrder": number,
                 "type": {
                     "id": string,
-                    "name": string
+                    "name": string,
+                    "image": string
                 }
         }[],
             "trigger": {
@@ -28,7 +29,8 @@ interface Task {
                 "TaskId": string,
                 "type": {
                     "id": string,
-                    "name": string
+                    "name": string,
+                    "image": string
                 }
         }
 }
@@ -91,20 +93,28 @@ function TaskTable({task}: {task: Task[]}) {
                 <div className="flex-1">Running</div>
                 <div className="flex-1">Go</div>
         </div>
-            {task.map(z => <div key={z.id} className="flex border-b border-t py-4">
-                    <div className="flex-1">
-                        {z.trigger.type.name}
-                        {z.action.map(r => r.type.name + " ")}
-                    </div>
-                    <div className="flex-1">
-                        {z.id}
-                    </div>
-                    <div className="flex-1">Nov 13, 2024</div>
-                    <div className="flex-1 cursor-pointer ">
-                        <Button onClick={() =>{
-                            router.push("/zap/" + z.id)
-                        }}>Look</Button>
-                    </div>
-            </div>)}
+        {task.map((z) => (
+    <div key={z.id} className="flex border-b border-t py-4">
+        <div className="flex-1">
+            <img src={z.trigger.type.name} className="w-[30px] h-[30px]" />
+            {z.action.map((r) => (
+                <img key={r.id} src={r.type.image} className="w-[30px] h-[30px]" />
+            ))}
+        </div>
+        <div className="flex-1">{z.id}</div>
+        <div className="flex-1">Nov 13, 2024</div>
+        <div className="flex-1">{`${HOOKS_URL}/hooks/catch/1/${z.id}`}</div>
+        <div className="flex-1 cursor-pointer">
+            <Button
+                onClick={() => {
+                    router.push("/task/" + z.id);
+                }}
+            >
+                Look
+            </Button>
+        </div>
+    </div>
+))}
+
     </div>
 }
