@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { BACKEND_URL, HOOKS_URL } from "../config";
 import Button from "@/components/button/Button";
 import { useRouter } from "next/navigation";
+import LinkButton from "@/components/button/LinkButton";
 
 interface Task {
         "id": string,
@@ -86,32 +87,33 @@ function TaskTable({task}: {task: Task[]}) {
 
     const router = useRouter();
 
-    return <div className="p-8 max-w-screen-lg w-full">
+    return <div className="p-10 max-w-screen-lg w-full">
         <div className="flex">
                 <div className="flex-1">Name</div>
-                <div className="flex-1">Last Edit</div>
+                <div className="flex-1">TaskId</div>
+                
                 <div className="flex-1">Running</div>
-                <div className="flex-1">Go</div>
+                <div className="flex-1 ">Go</div>
         </div>
         {task.map((z) => (
     <div key={z.id} className="flex border-b border-t py-4">
-        <div className="flex-1">
+        <div className="flex-1 flex">
             <img src={z.trigger.type.name} className="w-[30px] h-[30px]" />
             {z.action.map((r) => (
-                <img key={r.id} src={r.type.image} className="w-[30px] h-[30px]" />
+                <img key={r.id} src={r.type.image} className="w-[30px] h-[30px] p-1" />
             ))}
         </div>
         <div className="flex-1">{z.id}</div>
-        <div className="flex-1">Nov 13, 2024</div>
+        
         <div className="flex-1">{`${HOOKS_URL}/hooks/catch/1/${z.id}`}</div>
         <div className="flex-1 cursor-pointer">
-            <Button
+            <LinkButton
                 onClick={() => {
                     router.push("/task/" + z.id);
                 }}
             >
                 Look
-            </Button>
+            </LinkButton>
         </div>
     </div>
 ))}
