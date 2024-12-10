@@ -93,28 +93,29 @@ function TaskTable({task}: {task: Task[]}) {
                 <div className="flex-1">TaskId</div>
                 
                 <div className="flex-1">Running</div>
-                <div className="flex-1 ">Go</div>
+                <div className="flex-1">Go</div>
         </div>
         {task.map((z) => (
     <div key={z.id} className="flex border-b border-t py-4">
         <div className="flex-1 flex">
-            <img src={z.trigger.type.name} className="w-[30px] h-[30px]" />
+            <img src={z.trigger.type.image} className="w-[30px] h-[30px]" />
             {z.action.map((r) => (
                 <img key={r.id} src={r.type.image} className="w-[30px] h-[30px] p-1" />
             ))}
         </div>
         <div className="flex-1">{z.id}</div>
         
+        
         <div className="flex-1">{`${HOOKS_URL}/hooks/catch/1/${z.id}`}</div>
-        <div className="flex-1 cursor-pointer">
-            <LinkButton
-                onClick={() => {
-                    router.push("/task/" + z.id);
-                }}
-            >
-                Look
-            </LinkButton>
-        </div>
+            <div className="flex-1 cursor-pointer">
+                <LinkButton
+                    onClick={() => {
+                        router.push("/task/" + z.id);
+                    }}
+                >
+                    Look
+                </LinkButton>
+            </div>
     </div>
 ))}
 

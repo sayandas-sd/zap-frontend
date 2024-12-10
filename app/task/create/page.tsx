@@ -7,6 +7,7 @@ import HardButton from "@/components/button/HardButton";
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import  Input  from "@/components/Input";
 import { useEffect, useState } from "react";
 
 function useAvailableActionsAndTriggers() {
@@ -41,6 +42,7 @@ export default function() {
         availableActionName: string;
         metadata: any;
     }[]>([]);
+    
     const [selectedModalIndex, setSelectedModalIndex] = useState<null | number>(null);
 
     return <div>
@@ -124,18 +126,15 @@ export default function() {
 }
 function Modal({ index, onSelect, availableItems }: { index: number, onSelect: (props: null | { name: string; id: string; metadata: any; }) => void, availableItems: {id: string, name: string, image: string;}[] }) {
     const [step, setStep] = useState(0);
-    const [selectedActions, setSelectedActions] = useState<{ id: string; name: string }[]>([]);
+   
 
     const isTrigger = index === 1;
 
-    const handleActionSelect = (action: { id: string; name: string }) => {
-        setSelectedActions((prevActions) => [...prevActions, action]);
-        onSelect({
-            id: action.id,
-            name: action.name,
-            metadata: {}
-        });
-    };
+    const [selectedAction, setSelectedAction] = useState<{
+        id: string;
+        name: string;
+    }>();
+    
 
     return (
         <div className="fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-slate-100 bg-opacity-70 flex">
@@ -172,44 +171,87 @@ function Modal({ index, onSelect, availableItems }: { index: number, onSelect: (
                         </button>
                     </div>
                     <div className="p-4 md:p-5 space-y-4">
-                        {isTrigger ? (
-                            <div>
-                                {availableItems.map(({ id, name, image }) => (
-                                    <div
-                                        key={id}
-                                        onClick={() => {
-                                            onSelect({
-                                                id,
-                                                name,
-                                                metadata: {}
-                                            });
-                                        }}
-                                        className="flex border p-4 cursor-pointer hover:bg-slate-100"
-                                    >
-                                        <img src={image} width={30} className="rounded-full" />{' '}
-                                        <div className="flex flex-col justify-center">{name}</div>
-                                    </div>
-                                ))}
+                    
+                        {step === 1 && selectedAction?.id === "gml" && <EmailSelector setMetadata={(metadata) => {
+                        onSelect({
+                            ...selectedAction,
+                            metadata
+                        })
+                    }} />}
+
+                        {(step === 1 && selectedAction?.id === "sol") && <SolanaSelector setMetadata={(metadata) => {
+                            onSelect({
+                                ...selectedAction,
+                                metadata
+                            })
+                        }} />}
+
+                    {step === 0 && <div>{availableItems.map(({id, name, image}) => {
+                            return <div key={id} onClick={() => {
+                                if (isTrigger) {
+                                    onSelect({
+                                        id,
+                                        name,
+                                        metadata: {}
+                                    })
+                                } else {
+                                    setStep(s => s + 1);
+                                    setSelectedAction({
+                                        id,
+                                        name
+                                    })
+                                }
+                            }} className="flex border p-4 cursor-pointer hover:bg-slate-100">
+                                <img src={image} width={30} className="rounded-full" /> <div className="flex flex-col justify-center"> {name} </div>
                             </div>
-                        ) : (
-                            <div>
-                                {availableItems.map(({ id, name, image }) => (
-                                    <div
-                                        key={id}
-                                        onClick={() => {
-                                            handleActionSelect({ id, name });
-                                        }}
-                                        className="flex border p-4 cursor-pointer hover:bg-slate-100"
-                                    >
-                                        <img src={image} width={30} className="rounded-full" />{' '}
-                                        <div className="flex flex-col justify-center">{name}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        })}</div>} 
+                        
+                        
                     </div>
                 </div>
             </div>
         </div>
     );
+}
+
+
+function EmailSelector({setMetadata}: {
+    setMetadata: (params: any) => void;
+}) {
+    const [email, setEmail] = useState("");
+    const [body, setBody] = useState("");
+
+    return <div>
+        <Input label={"To"} type={"text"} placeholder="To" onChange={(e) => setEmail(e.target.value)}></Input>
+        <Input label={"Body"} type={"text"} placeholder="Body" onChange={(e) => setBody(e.target.value)}></Input>
+        <div className="pt-2">
+            <HardButton onClick={() => {
+                setMetadata({
+                    email,
+                    body
+                })
+            }}>Submit</HardButton>
+        </div>
+    </div>
+}
+
+
+function SolanaSelector({setMetadata}: {
+    setMetadata: (params: any) => void;
+}) {
+    const [amount, setAmount] = useState("");
+    const [address, setAddress] = useState("");    
+
+    return <div>
+        <Input label={"To"} type={"text"} placeholder="To" onChange={(e) => setAddress(e.target.value)}></Input>
+        <Input label={"Amount"} type={"text"} placeholder="To" onChange={(e) => setAmount(e.target.value)}></Input>
+        <div className="pt-4">
+        <HardButton onClick={() => {
+            setMetadata({
+                amount,
+                address
+            })
+        }}>Submit</HardButton>
+        </div>
+    </div>
 }
